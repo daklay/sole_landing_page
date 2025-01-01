@@ -2,10 +2,12 @@
 
 import { ArrowRightIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import LearnMoreModal from './LearnMoreModal';
 
 export default function CTASection() {
   const router = useRouter();
-  
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <section className="relative bg-primary text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
       <div className="absolute inset-0">
@@ -29,12 +31,20 @@ export default function CTASection() {
             Take the Survey Now
             <ArrowRightIcon className="w-5 h-5 inline-block ml-2 group-hover:translate-x-1 transition-transform" />
           </button>
-          <button className="group border-2 border-white/30 hover:border-white/50 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 w-full sm:w-auto hover:-translate-y-0.5">
+          <button 
+              onClick={() => setIsModalOpen(true)}
+            className="group border-2 border-white/30 hover:border-white/50 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 w-full sm:w-auto hover:-translate-y-0.5"
+          >
             Learn More
             <ChevronRightIcon className="w-5 h-5 inline-block ml-1 group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
       </div>
+      
+      <LearnMoreModal
+        isOpen={isModalOpen}
+        closeModal={() => setIsModalOpen(false)}
+      />
     </section>
   );
 }
