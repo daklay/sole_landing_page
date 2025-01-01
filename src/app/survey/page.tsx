@@ -3,98 +3,195 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+
+const categories = [
+  { id: 'academic', name: 'Academic Resources', description: 'Library, online materials, research tools' },
+  { id: 'teaching', name: 'Teaching Quality', description: 'Instruction quality, engagement, support' },
+  { id: 'facilities', name: 'Campus Facilities', description: 'Classrooms, labs, study spaces' },
+  { id: 'services', name: 'Student Services', description: 'Administrative support, counseling, career services' },
+  { id: 'activities', name: 'Extra-curricular', description: 'Clubs, events, sports activities' },
+];
+
+interface FeedbackItem {
+  rating: number;
+  comment: string;
+}
 
 export default function SurveyPage() {
   const router = useRouter();
-  const [rating, setRating] = useState<number>(0);
-  const [feedback, setFeedback] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [feedback, setFeedback] = useState<{[key: string]: FeedbackItem}>({});
+  const [showCategorySelect, setShowCategorySelect] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log({ rating, feedback });
-    // Redirect to thank you page or home
-    router.push('/');
+  const handleCategorySelect = (categoryId: string) => {
+    if (!selectedCategories.includes(categoryId)) {
+      setSelectedCategories(prev => [...prev, categoryId]);
+      setFeedback(prev => ({
+        ...prev,
+        [categoryId]: { rating: 0, comment: '' }
+      }));
+    }
+    setShowCategorySelect(false);
   };
 
+  const handleRemoveCategory = (categoryId: string) => {
+    setSelectedCategories(prev => prev.filter(id => id !== categoryId));
+    setFeedback(prev => {
+      const newFeedback = { ...prev };
+      delete newFeedback[categoryId];
+      return newFeedback;
+    });
+  };
+
+  const handleSubmit = () => {
+    console.log('Survey feedback:', feedback);
+    router.push('/thank-you');
+  };
+
+  const isSubmitDisabled = selectedCategories.length === 0 || 
+    selectedCategories.some(cat => feedback[cat]?.rating === 0);
+
   return (
-    <main className="flex min-h-screen flex-col bg-white">
+    <main className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-50">
+      <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex justify-between items-center">
-            <Image src="/svgs/logos/logo.svg" alt="Logo" width={170} height={40} className="w-auto h-8" />
-          </nav>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <div className="flex-1 pt-24 pb-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-b from-primary/5 to-white rounded-3xl p-8 sm:p-12">
-            <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">Your Opinion Matters</h1>
-              <p className="text-lg text-gray-600">
-                Help us improve by sharing your feedback
-              </p>
-            </div>
-            
-            <form onSubmit={handleSubmit} className="space-y-10">
-              {/* Rating Section */}
-              <div className="space-y-6">
-                <label className="block text-xl font-semibold text-gray-900 text-center">
-                  How would you rate your experience?
-                </label>
-                <div className="flex justify-center gap-4">
-                  {[1, 2, 3, 4, 5].map((value) => (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setRating(value)}
-                      className={`w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-semibold transition-all duration-200 hover:-translate-y-0.5
-                        ${rating === value 
-                          ? 'bg-primary text-white shadow-lg shadow-primary/30' 
-                          : 'bg-white text-gray-600 shadow-md hover:shadow-lg hover:bg-gray-50'
-                        }`}
-                    >
-                      {value}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Feedback Section */}
-              <div className="space-y-4">
-                <label htmlFor="feedback" className="block text-xl font-semibold text-gray-900">
-                  Additional Comments <span className="text-gray-500 text-base">(Optional)</span>
-                </label>
-                <textarea
-                  id="feedback"
-                  rows={5}
-                  className="w-full px-6 py-4 rounded-2xl border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none shadow-sm"
-                  placeholder="Share your thoughts with us..."
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-center pt-4">
-                <button
-                  type="submit"
-                  disabled={rating === 0}
-                  className={`group px-10 py-4 rounded-xl font-semibold text-lg transition-all duration-200 
-                    ${rating === 0 
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                      : 'bg-primary text-white shadow-lg shadow-primary/30 hover:shadow-xl hover:-translate-y-0.5'
-                    }`}
-                >
-                  Submit Feedback
-                </button>
-              </div>
-            </form>
+          <div className="flex items-center justify-between">
+            <Image src="/svgs/logos/logo.svg" alt="Logo" width={170} height={40} className="w-auto h-7" />
+            <button
+              onClick={() => router.push('/')}
+              className="text-gray-600 hover:text-primary transition-colors"
+            >
+              Exit Survey
+            </button>
           </div>
         </div>
+      </div>
+
+      {/* Survey Content */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Share Your Feedback</h1>
+          <p className="text-gray-600">
+            Select categories you'd like to give feedback on and rate your experience
+          </p>
+        </div>
+
+        {/* Add Category Button */}
+        <div className="relative mb-8">
+          <button
+            onClick={() => setShowCategorySelect(true)}
+            className="w-full p-4 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-200"
+          >
+            <PlusIcon className="w-6 h-6 mx-auto mb-2" />
+            Add Category
+          </button>
+
+          {/* Category Selection Dropdown */}
+          {showCategorySelect && (
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-10">
+              {categories
+                .filter(cat => !selectedCategories.includes(cat.id))
+                .map(category => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategorySelect(category.id)}
+                    className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="font-medium text-gray-900">{category.name}</div>
+                    <div className="text-sm text-gray-500">{category.description}</div>
+                  </button>
+                ))}
+            </div>
+          )}
+        </div>
+
+        {/* Selected Categories */}
+        <div className="space-y-6">
+          {selectedCategories.map(categoryId => {
+            const category = categories.find(c => c.id === categoryId)!;
+            return (
+              <div key={categoryId} className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900">{category.name}</h2>
+                    <p className="text-sm text-gray-500">{category.description}</p>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveCategory(categoryId)}
+                    className="text-gray-400 hover:text-gray-500"
+                  >
+                    <XMarkIcon className="w-5 h-5" />
+                  </button>
+                </div>
+
+                {/* Rating */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Rating
+                  </label>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((value) => (
+                      <button
+                        key={value}
+                        onClick={() => setFeedback(prev => ({
+                          ...prev,
+                          [categoryId]: { ...prev[categoryId], rating: value }
+                        }))}
+                        className="p-1 hover:scale-110 transition-transform"
+                      >
+                        {value <= (feedback[categoryId]?.rating || 0) ? (
+                          <StarIconSolid className="w-8 h-8 text-yellow-400" />
+                        ) : (
+                          <StarIcon className="w-8 h-8 text-gray-300" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Comment */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Comments <span className="text-gray-400">(Optional)</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={feedback[categoryId]?.comment || ''}
+                    onChange={(e) => setFeedback(prev => ({
+                      ...prev,
+                      [categoryId]: { ...prev[categoryId], comment: e.target.value }
+                    }))}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+                    placeholder="Share your thoughts..."
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Submit Button */}
+        {selectedCategories.length > 0 && (
+          <div className="mt-8 flex justify-end">
+            <button
+              onClick={handleSubmit}
+              disabled={isSubmitDisabled}
+              className={`
+                flex items-center px-6 py-3 rounded-lg transition-all duration-200
+                ${isSubmitDisabled
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-primary text-white hover:bg-primary-dark'
+                }
+              `}
+            >
+              Submit Feedback
+              <ArrowRightIcon className="w-5 h-5 ml-2" />
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

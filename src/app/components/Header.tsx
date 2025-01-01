@@ -1,13 +1,25 @@
 'use client';
 
 import Image from 'next/image'
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 export default function Header() {
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Prevent body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
   
   return (
     <>
@@ -59,7 +71,7 @@ export default function Header() {
           fixed inset-0 bg-white/95 backdrop-blur-sm z-40 md:hidden
           transition-transform duration-300 ease-in-out
           ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'}
-          pt-28 px-6
+          pt-28 px-6 overflow-hidden
         `}
       >
         <nav className="flex flex-col items-center space-y-6">
