@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image'
 import { 
   AcademicCapIcon, 
@@ -13,19 +15,24 @@ import {
   ArrowRightIcon,
   ChevronRightIcon
 } from '@heroicons/react/24/outline'
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
   return (
     <main className="min-h-screen">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex justify-between items-center">
-            <Image src="/logo.svg" alt="Logo" width={170} height={40} className="w-auto h-8" />
+            <Image src="/svgs/logos/logo.svg" alt="Logo" width={170} height={40} className="w-auto h-8" />
             <div className="hidden md:flex items-center space-x-8">
               <a href="#features" className="text-gray-600 hover:text-primary transition-colors duration-200">Why It Matters</a>
               <a href="#categories" className="text-gray-600 hover:text-primary transition-colors duration-200">Categories</a>
-              <button className="bg-primary/10 text-primary hover:bg-primary/20 px-4 py-2 rounded-lg transition-all duration-200">
+              <button 
+                onClick={() => router.push('/survey')}
+                className="bg-primary/10 text-primary hover:bg-primary/20 px-4 py-2 rounded-lg transition-all duration-200"
+              >
                 Take Survey
               </button>
             </div>
@@ -51,7 +58,10 @@ export default function Home() {
             Help shape the future of your university experience by sharing your valuable feedback
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="group bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl w-full sm:w-auto hover:-translate-y-0.5">
+            <button 
+              onClick={() => router.push('/survey')}
+              className="group bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl w-full sm:w-auto hover:-translate-y-0.5"
+            >
               Start Survey
               <ArrowRightIcon className="w-5 h-5 inline-block ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -161,7 +171,10 @@ export default function Home() {
             Your feedback helps us create a better university experience for everyone
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="group bg-white text-primary hover:bg-gray-50 font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl w-full sm:w-auto hover:-translate-y-0.5">
+            <button 
+              onClick={() => router.push('/survey')}
+              className="group bg-white text-primary hover:bg-gray-50 font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl w-full sm:w-auto hover:-translate-y-0.5"
+            >
               Take the Survey Now
               <ArrowRightIcon className="w-5 h-5 inline-block ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
@@ -178,7 +191,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             <div>
-              <Image src="/logo.svg" alt="Logo" width={140} height={35} className="w-auto h-6 mb-4" />
+              <Image src="/svgs/logos/logo.svg" alt="Logo" width={140} height={35} className="w-auto h-6 mb-4" />
               <p className="text-gray-500 text-sm">
                 Empowering students to shape their educational journey through meaningful feedback.
               </p>
