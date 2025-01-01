@@ -75,7 +75,7 @@ export default function SurveyPage() {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Share Your Feedback</h1>
           <p className="text-gray-600">
-            Select categories you'd like to give feedback on and rate your experience
+            Select categories you&apos;d like to give feedback on and rate your experience
           </p>
         </div>
 
