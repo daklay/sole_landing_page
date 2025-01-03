@@ -56,142 +56,152 @@ export default function SurveyPage() {
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Image src="/svgs/logos/logo.svg" alt="Logo" width={170} height={40} className="w-auto h-7" />
+      <header className="fixed top-6 left-0 right-0 z-50 px-4">
+        <div className="max-w-7xl mx-auto">
+          <nav className="bg-white/95 backdrop-blur-sm rounded-full shadow-lg shadow-gray-200/50 p-2 flex justify-between items-center">
+            <div className="flex-shrink-0 ml-4 cursor-pointer" onClick={() => router.push('/')}>
+              <Image src="/svgs/logos/logo.svg" alt="Logo" width={170} height={40} className="w-auto h-7" />
+            </div>
             <button
               onClick={() => router.push('/')}
-              className="text-gray-600 hover:text-primary transition-colors"
+              className="bg-gray-50/80 text-gray-600 hover:text-primary px-6 py-1.5 rounded-full transition-colors duration-200 mr-4"
             >
-              Exit Survey
+              Exit
             </button>
+          </nav>
+        </div>
+      </header>
+
+      {/* Add padding to account for fixed header */}
+      <div className="pt-28">
+        {/* Survey Content */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Share Your <span className="text-primary">Feedback</span>
+            </h1>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Your insights help us improve and create a better experience for everyone
+            </p>
           </div>
-        </div>
-      </div>
 
-      {/* Survey Content */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Share Your Feedback</h1>
-          <p className="text-gray-600">
-            Select categories you&apos;d like to give feedback on and rate your experience
-          </p>
-        </div>
+          {/* Add Category Button */}
+          <div className="relative mb-12">
+            <button
+              onClick={() => setShowCategorySelect(true)}
+              className="w-full p-6 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 text-gray-700 hover:bg-primary/10 hover:border-primary/50 transition-all duration-200 group"
+            >
+              <div className="flex items-center justify-center">
+                <PlusIcon className="w-8 h-8 text-primary/70 group-hover:text-primary mr-3" />
+                <span className="text-lg font-medium">Add Category</span>
+              </div>
+              <p className="text-gray-500 mt-2">Select categories you'd like to provide feedback on</p>
+            </button>
 
-        {/* Add Category Button */}
-        <div className="relative mb-8">
-          <button
-            onClick={() => setShowCategorySelect(true)}
-            className="w-full p-4 rounded-xl border-2 border-dashed border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-200"
-          >
-            <PlusIcon className="w-6 h-6 mx-auto mb-2" />
-            Add Category
-          </button>
+            {/* Category Selection Dropdown */}
+            {showCategorySelect && (
+              <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-10">
+                {categories
+                  .filter(cat => !selectedCategories.includes(cat.id))
+                  .map(category => (
+                    <button
+                      key={category.id}
+                      onClick={() => handleCategorySelect(category.id)}
+                      className="w-full text-left p-4 rounded-xl hover:bg-primary/5 transition-colors group"
+                    >
+                      <div className="font-medium text-gray-900 group-hover:text-primary">{category.name}</div>
+                      <div className="text-sm text-gray-500">{category.description}</div>
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
 
-          {/* Category Selection Dropdown */}
-          {showCategorySelect && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 p-2 z-10">
-              {categories
-                .filter(cat => !selectedCategories.includes(cat.id))
-                .map(category => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategorySelect(category.id)}
-                    className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="font-medium text-gray-900">{category.name}</div>
-                    <div className="text-sm text-gray-500">{category.description}</div>
-                  </button>
-                ))}
+          {/* Selected Categories */}
+          <div className="space-y-8">
+            {selectedCategories.map(categoryId => {
+              const category = categories.find(c => c.id === categoryId)!;
+              return (
+                <div key={categoryId} className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:border-primary/20 transition-colors">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <h2 className="text-2xl font-semibold text-gray-900">{category.name}</h2>
+                      <p className="text-gray-500 mt-1">{category.description}</p>
+                    </div>
+                    <button
+                      onClick={() => handleRemoveCategory(categoryId)}
+                      className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-red-50 rounded-full"
+                    >
+                      <XMarkIcon className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Rating */}
+                  <div className="mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      How would you rate your experience?
+                    </label>
+                    <div className="flex gap-3">
+                      {[1, 2, 3, 4, 5].map((value) => (
+                        <button
+                          key={value}
+                          onClick={() => setFeedback(prev => ({
+                            ...prev,
+                            [categoryId]: { ...prev[categoryId], rating: value }
+                          }))}
+                          className="p-1.5 hover:scale-110 transition-transform"
+                        >
+                          {value <= (feedback[categoryId]?.rating || 0) ? (
+                            <StarIconSolid className="w-8 h-8 text-yellow-400" />
+                          ) : (
+                            <StarIcon className="w-8 h-8 text-gray-300 hover:text-yellow-400/50" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Comment */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                      Share your thoughts 
+                    </label>
+                    <textarea
+                      rows={4}
+                      value={feedback[categoryId]?.comment || ''}
+                      onChange={(e) => setFeedback(prev => ({
+                        ...prev,
+                        [categoryId]: { ...prev[categoryId], comment: e.target.value }
+                      }))}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+                      placeholder="What specific aspects would you like to highlight?"
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Submit Button */}
+          {selectedCategories.length > 0 && (
+            <div className="mt-12 flex justify-end">
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitDisabled}
+                className={`
+                  flex items-center px-8 py-4 rounded-xl text-lg font-medium transition-all duration-200
+                  ${isSubmitDisabled
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-primary text-white hover:bg-primary-dark hover:scale-105 shadow-lg shadow-primary/20'
+                  }
+                `}
+              >
+                Submit Feedback
+                <ArrowRightIcon className="w-5 h-5 ml-3" />
+              </button>
             </div>
           )}
         </div>
-
-        {/* Selected Categories */}
-        <div className="space-y-6">
-          {selectedCategories.map(categoryId => {
-            const category = categories.find(c => c.id === categoryId)!;
-            return (
-              <div key={categoryId} className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h2 className="text-xl font-semibold text-gray-900">{category.name}</h2>
-                    <p className="text-sm text-gray-500">{category.description}</p>
-                  </div>
-                  <button
-                    onClick={() => handleRemoveCategory(categoryId)}
-                    className="text-gray-400 hover:text-gray-500"
-                  >
-                    <XMarkIcon className="w-5 h-5" />
-                  </button>
-                </div>
-
-                {/* Rating */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Rating
-                  </label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((value) => (
-                      <button
-                        key={value}
-                        onClick={() => setFeedback(prev => ({
-                          ...prev,
-                          [categoryId]: { ...prev[categoryId], rating: value }
-                        }))}
-                        className="p-1 hover:scale-110 transition-transform"
-                      >
-                        {value <= (feedback[categoryId]?.rating || 0) ? (
-                          <StarIconSolid className="w-8 h-8 text-yellow-400" />
-                        ) : (
-                          <StarIcon className="w-8 h-8 text-gray-300" />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Comment */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Comments <span className="text-gray-400">(Optional)</span>
-                  </label>
-                  <textarea
-                    rows={3}
-                    value={feedback[categoryId]?.comment || ''}
-                    onChange={(e) => setFeedback(prev => ({
-                      ...prev,
-                      [categoryId]: { ...prev[categoryId], comment: e.target.value }
-                    }))}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-                    placeholder="Share your thoughts..."
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Submit Button */}
-        {selectedCategories.length > 0 && (
-          <div className="mt-8 flex justify-end">
-            <button
-              onClick={handleSubmit}
-              disabled={isSubmitDisabled}
-              className={`
-                flex items-center px-6 py-3 rounded-lg transition-all duration-200
-                ${isSubmitDisabled
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-primary text-white hover:bg-primary-dark'
-                }
-              `}
-            >
-              Submit Feedback
-              <ArrowRightIcon className="w-5 h-5 ml-2" />
-            </button>
-          </div>
-        )}
       </div>
     </main>
   );

@@ -8,18 +8,18 @@ import {
   UserIcon,
   AcademicCapIcon,
   MusicalNoteIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  EllipsisHorizontalCircleIcon
 } from '@heroicons/react/24/outline';
 
 const categories = [
-  { name: 'Food Quality', icon: SparklesIcon, count: '15 questions' },
-  { name: 'Housing', icon: HomeIcon, count: '12 questions' },
-  { name: 'Education', icon: BookOpenIcon, count: '20 questions' },
-  { name: 'Campus Facilities', icon: BuildingOfficeIcon, count: '10 questions' },
-  { name: 'Student Services', icon: UserIcon, count: '18 questions' },
-  { name: 'Academic Resources', icon: AcademicCapIcon, count: '14 questions' },
-  { name: 'Extra-curricular', icon: MusicalNoteIcon, count: '8 questions' },
-  { name: 'Safety & Security', icon: ShieldCheckIcon, count: '16 questions' }
+  { name: 'Food Quality', icon: SparklesIcon },
+  { name: 'Housing', icon: HomeIcon },
+  { name: 'Education', icon: BookOpenIcon },
+  { name: 'Campus Facilities', icon: BuildingOfficeIcon },
+  { name: 'Student Services', icon: UserIcon },
+  { name: 'Academic Resources', icon: AcademicCapIcon },
+  { name: 'Extra-curricular', icon: MusicalNoteIcon },
 ];
 
 export default function CategoriesSection() {
@@ -39,17 +39,23 @@ export default function CategoriesSection() {
               key={index}
               className="group bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1"
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-center  gap-4">
                 <div className="p-3 bg-primary/10 rounded-lg">
                   <category.icon className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" />
                 </div>
-                <div>
-                  <h3 className="font-medium text-gray-900 mb-1">{category.name}</h3>
-                  <p className="text-sm text-gray-500">{category.count}</p>
-                </div>
+                <h3 className="font-medium text-gray-900 mt-1.5">{category.name}</h3>
               </div>
             </div>
           ))}
+          {/* More Categories Tile */}
+          <div className="group bg-white/50 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-dashed border-primary/30">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/5 rounded-lg">
+                <EllipsisHorizontalCircleIcon className="w-6 h-6 text-primary/70 group-hover:scale-110 transition-transform duration-300" />
+              </div>
+              <h3 className="font-medium text-gray-900 mt-1.5">More Categories</h3>
+            </div>
+          </div>
         </div>
       </div>
     </section>
