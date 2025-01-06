@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon, UserIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 const categories = [
@@ -19,11 +19,19 @@ interface FeedbackItem {
   comment: string;
 }
 
+interface PersonalInfo {
+  fullName: string;
+  email: string;
+}
+
 export default function SurveyPage() {
   const router = useRouter();
+  const modalRef = useRef<HTMLDivElement>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<{[key: string]: FeedbackItem}>({});
   const [showCategorySelect, setShowCategorySelect] = useState(false);
+  const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({ fullName: '', email: '' });
+  const [includePersonalInfo, setIncludePersonalInfo] = useState(false);
 
   const handleCategorySelect = (categoryId: string) => {
     if (!selectedCategories.includes(categoryId)) {
@@ -46,12 +54,31 @@ export default function SurveyPage() {
   };
 
   const handleSubmit = () => {
-    console.log('Survey feedback:', feedback);
+    console.log('Survey feedback:', {
+      personalInfo: includePersonalInfo ? personalInfo : null,
+      feedback
+    });
     router.push('/thank-you');
   };
 
   const isSubmitDisabled = selectedCategories.length === 0 || 
     selectedCategories.some(cat => feedback[cat]?.rating === 0);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setShowCategorySelect(false);
+      }
+    }
+
+    if (showCategorySelect) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCategorySelect]);
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -85,6 +112,71 @@ export default function SurveyPage() {
             </p>
           </div>
 
+          {/* Personal Information Section */}
+          <div className="mb-12">
+            <div className="flex items-center justify-between bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:border-primary/20 transition-colors">
+              <div className="flex items-center">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mr-4">
+                  <UserIcon className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900">Personal Information</h3>
+                  <p className="text-gray-500 text-sm">Add your contact details to the survey</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIncludePersonalInfo(!includePersonalInfo)}
+                className={`px-4 py-2 rounded-xl transition-all duration-200 flex items-center ${
+                  includePersonalInfo 
+                    ? 'bg-red-50 text-red-600 hover:bg-red-100' 
+                    : 'bg-primary/10 text-primary hover:bg-primary/20'
+                }`}
+              >
+                {includePersonalInfo ? (
+                  <>
+                    <XMarkIcon className="w-5 h-5 mr-2" />
+                    <span>Remove</span>
+                  </>
+                ) : (
+                  <>
+                    <PlusIcon className="w-5 h-5 mr-2" />
+                    <span>Add</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Personal Information Form */}
+            {includePersonalInfo && (
+              <div className="mt-4 bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:border-primary/20 transition-colors space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    value={personalInfo.fullName}
+                    onChange={(e) => setPersonalInfo(prev => ({ ...prev, fullName: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={personalInfo.email}
+                    onChange={(e) => setPersonalInfo(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    placeholder="Enter your email address"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Add Category Button */}
           <div className="relative mb-12">
             <button
@@ -100,7 +192,7 @@ export default function SurveyPage() {
 
             {/* Category Selection Dropdown */}
             {showCategorySelect && (
-              <div className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-10">
+              <div ref={modalRef} className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-10">
                 {categories
                   .filter(cat => !selectedCategories.includes(cat.id))
                   .map(category => (
