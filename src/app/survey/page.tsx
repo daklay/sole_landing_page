@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon, UserIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import Footer from '../components/Footer';
 
 const categories = [
   { id: 'academic', name: 'Academic Resources', description: 'Library, online materials, research tools' },
@@ -312,6 +313,9 @@ export default function SurveyPage() {
           )}
         </div>
       </div>
+
+      {/* Footer */}
+      {/* <Footer /> */}
     </main>
   );
 }
