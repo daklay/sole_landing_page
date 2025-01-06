@@ -177,38 +177,6 @@ export default function SurveyPage() {
             )}
           </div>
 
-          {/* Add Category Button */}
-          <div className="relative mb-12">
-            <button
-              onClick={() => setShowCategorySelect(true)}
-              className="w-full p-6 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 text-gray-700 hover:bg-primary/10 hover:border-primary/50 transition-all duration-200 group"
-            >
-              <div className="flex items-center justify-center">
-                <PlusIcon className="w-8 h-8 text-primary/70 group-hover:text-primary mr-3" />
-                <span className="text-lg font-medium">Add Category</span>
-              </div>
-              <p className="text-gray-500 mt-2">Select categories you'd like to provide feedback on</p>
-            </button>
-
-            {/* Category Selection Dropdown */}
-            {showCategorySelect && (
-              <div ref={modalRef} className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-10">
-                {categories
-                  .filter(cat => !selectedCategories.includes(cat.id))
-                  .map(category => (
-                    <button
-                      key={category.id}
-                      onClick={() => handleCategorySelect(category.id)}
-                      className="w-full text-left p-4 rounded-xl hover:bg-primary/5 transition-colors group"
-                    >
-                      <div className="font-medium text-gray-900 group-hover:text-primary">{category.name}</div>
-                      <div className="text-sm text-gray-500">{category.description}</div>
-                    </button>
-                  ))}
-              </div>
-            )}
-          </div>
-
           {/* Selected Categories */}
           <div className="space-y-8">
             {selectedCategories.map(categoryId => {
@@ -272,6 +240,55 @@ export default function SurveyPage() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Add Category Button */}
+          <div className="relative mt-8">
+            <div className="relative">
+              <button
+                onClick={() => setShowCategorySelect(true)}
+                className="w-full p-6 rounded-2xl border-2 border-dashed border-primary/30 bg-primary/5 text-gray-700 hover:bg-primary/10 hover:border-primary/50 transition-all duration-200 group"
+              >
+                <div className="flex items-center justify-center">
+                  <PlusIcon className="w-8 h-8 text-primary/70 group-hover:text-primary mr-3" />
+                  <span className="text-lg font-medium">Add Category</span>
+                </div>
+                <p className="text-gray-500 mt-2">Select categories you'd like to provide feedback on</p>
+              </button>
+
+              {/* Category Selection Dropdown */}
+              {showCategorySelect && (
+                <div 
+                  ref={modalRef} 
+                  className="absolute top-full left-0 right-0 mt-3 bg-white rounded-2xl shadow-xl border border-gray-100 p-3 z-10"
+                >
+                  <div>
+                    {categories
+                      .filter(cat => !selectedCategories.includes(cat.id))
+                      .map(category => (
+                        <button
+                          key={category.id}
+                          onClick={() => handleCategorySelect(category.id)}
+                          className="w-full text-left p-4 rounded-xl hover:bg-primary/5 transition-colors group"
+                        >
+                          <div className="font-medium text-gray-900 group-hover:text-primary">{category.name}</div>
+                          <div className="text-sm text-gray-500">{category.description}</div>
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Dynamic spacer div that appears when dropdown is open */}
+            {showCategorySelect && (
+              <div 
+                className="transition-all duration-200" 
+                style={{ 
+                  height: `${(categories.filter(cat => !selectedCategories.includes(cat.id)).length * 88) + 24}px`
+                }} 
+                aria-hidden="true" 
+              />
+            )}
           </div>
 
           {/* Submit Button */}
