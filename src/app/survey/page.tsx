@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon, UserIcon, PauseIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
-import Footer from '../components/Footer';
+// import Footer from '../components/Footer';
 
 const categories = [
   { id: 'academic', name: 'Academic Resources', description: 'Library, online materials, research tools' },
@@ -33,7 +33,7 @@ export default function SurveyPage() {
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({ fullName: '', email: '' });
   const [includePersonalInfo, setIncludePersonalInfo] = useState(false);
-  const [isPaused, setIsPaused] = useState(true); // This should come from your API or props
+  const isPaused = true; // This should come from your API or props
 
   const handleCategorySelect = (categoryId: string) => {
     if (!selectedCategories.includes(categoryId)) {
@@ -115,7 +115,7 @@ export default function SurveyPage() {
               </h1>
               
               <p className="text-lg text-gray-600 max-w-lg mx-auto mb-8">
-                We're currently making some improvements to enhance your survey experience. Please check back later.
+                We&apos;re currently making some improvements to enhance your survey experience. Please check back later.
               </p>
 
               <button
@@ -280,7 +280,7 @@ export default function SurveyPage() {
                       <PlusIcon className="w-8 h-8 text-primary/70 group-hover:text-primary mr-3" />
                       <span className="text-lg font-medium">Add Category</span>
                     </div>
-                    <p className="text-gray-500 mt-2">Select categories you'd like to provide feedback on</p>
+                    <p className="text-gray-500 mt-2">Select categories you&apos;d like to provide feedback on</p>
                   </button>
 
                   {/* Category Selection Dropdown */}
