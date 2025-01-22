@@ -33,7 +33,7 @@ export default function SurveyPage() {
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({ fullName: '', email: '' });
   const [includePersonalInfo, setIncludePersonalInfo] = useState(false);
-  const isPaused = true; // This should come from your API or props
+  const isPaused = false; // This should come from your API or props
 
   const handleCategorySelect = (categoryId: string) => {
     if (!selectedCategories.includes(categoryId)) {
