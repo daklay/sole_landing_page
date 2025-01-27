@@ -8,7 +8,6 @@ import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 import { PersonalInfo, FeedbackItem, FormSettings, Category } from '../types';
 import { formsService } from '../services/forms';
 
-interface Props {}
 
 export default function SurveyPage() {
   const router = useRouter();

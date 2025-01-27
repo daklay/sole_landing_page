@@ -1,10 +1,6 @@
 import api from '../config/api';
 import { FormSettings, Category } from '../types';
 
-interface YearFormResponse {
-  formSettings: FormSettings;
-  YearCaterogies: any[];
-}
 
 export interface CategoryResponse extends Category {
   uuid: string;

@@ -3,7 +3,7 @@
 import * as Icon from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
-import { formsService, CategoryResponse } from '../services/forms';
+import { formsService } from '../services/forms';
 
 interface Category {
   uuid: string;
