@@ -5,29 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { PauseIcon, UserIcon, StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
+import { PersonalInfo, FeedbackItem, FormSettings, Category } from '../types';
+import { formsService } from '../services/forms';
 
-interface PersonalInfo {
-  fullName: string;
-  email: string;
-}
-
-interface FeedbackItem {
-  rating: number;
-  comment: string;
-}
-
-interface FormSettings {
-  status: boolean;
-  thankYouMessage: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  description: string;
-  ratingQuestion: string;
-  commentQuestion: string;
-}
+interface Props {}
 
 export default function SurveyPage() {
   const router = useRouter();
@@ -44,18 +25,9 @@ export default function SurveyPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:3000/public/forms/year');
-        const data = await response.json();
-        setFormSettings(data.formSettings);
-        // Transform the API categories to match our interface
-        const transformedCategories = data.YearCaterogies.map((cat: any) => ({
-          id: cat.uuid,
-          name: cat.name,
-          description: cat.description,
-          ratingQuestion: cat.ratingQuestion,
-          commentQuestion: cat.commentQuestion
-        }));
-        setCategories(transformedCategories);
+        const { formSettings, categories: apiCategories } = await formsService.getYearForm();
+        setFormSettings(formSettings);
+        setCategories(apiCategories);
       } catch (error) {
         console.error('Error fetching data:', error);
         setCategories([]);
@@ -101,12 +73,19 @@ export default function SurveyPage() {
     });
   };
 
-  const handleSubmit = () => {
-    console.log('Survey feedback:', {
-      personalInfo: includePersonalInfo ? personalInfo : null,
-      feedback
-    });
-    router.push('/thank-you');
+  const handleSubmit = async () => {
+    try {
+      const feedbackData = {
+        personalInfo: includePersonalInfo ? personalInfo : null,
+        feedback
+      };
+      
+      await formsService.submitFeedback(feedbackData);
+      router.push('/thank-you');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      // You might want to show an error message to the user here
+    }
   };
 
   const isSubmitDisabled = selectedCategories.length === 0 || 

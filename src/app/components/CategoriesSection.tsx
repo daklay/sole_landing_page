@@ -3,6 +3,7 @@
 import * as Icon from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, useState, useEffect } from 'react';
+import { formsService, CategoryResponse } from '../services/forms';
 
 interface Category {
   uuid: string;
@@ -32,9 +33,7 @@ export default function CategoriesSection() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:3000/public/forms/year');
-        const data = await response.json();
-        const allCategories = data.YearCaterogies;
+        const allCategories = await formsService.getCategories();
         
         // Split categories into visible and additional
         const visibleCount = Math.min(6, allCategories.length);
