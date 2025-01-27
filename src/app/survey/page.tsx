@@ -300,6 +300,7 @@ export default function SurveyPage() {
                       <div>
                         {categories
                           .filter(cat => !selectedCategories.includes(cat.id))
+                          .filter(cat => !cat.deleted)
                           .map(category => (
                             <button
                               key={category.id}

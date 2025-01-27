@@ -19,4 +19,5 @@ export interface Category {
   description: string;
   ratingQuestion: string;
   commentQuestion: string;
+  deleted?: boolean;
 }
