@@ -12,6 +12,7 @@ interface Category {
   description: string;
   ratingQuestion: string;
   commentQuestion: string;
+  deleted?: boolean;
 }
 
 const getIconComponent = (iconName: string): any => {
@@ -34,12 +35,12 @@ export default function CategoriesSection() {
     const fetchCategories = async () => {
       try {
         const allCategories = await formsService.getCategories();
+        const activeCategories = allCategories.filter((cat: Category) => !cat.deleted);
         
-        // Split categories into visible and additional
-        const visibleCount = Math.min(6, allCategories.length);
-        setVisibleCategories(allCategories.slice(0, visibleCount));
-        setAdditionalCategories(allCategories.slice(visibleCount));
-        setCategories(allCategories);
+        const visibleCount = 7;
+        setVisibleCategories(activeCategories.slice(0, visibleCount));
+        setAdditionalCategories(activeCategories.slice(visibleCount));
+        setCategories(activeCategories);
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
@@ -154,7 +155,7 @@ export default function CategoriesSection() {
                   >
                     Additional Categories
                   </Dialog.Title>
-                  <div className="grid gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     {additionalCategories.map((category) => {
                       const IconComponent = getIconComponent(category.icon);
                       return (
@@ -168,7 +169,7 @@ export default function CategoriesSection() {
                             </div>
                             <div>
                               <h3 className="font-medium text-gray-900">{category.name}</h3>
-                              <p className="text-sm text-gray-500">{category.description}</p>
+                              <p className="text-sm text-gray-500 line-clamp-2">{category.description}</p>
                             </div>
                           </div>
                         </div>

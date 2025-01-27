@@ -74,12 +74,12 @@ export default function SurveyPage() {
 
   const handleSubmit = async () => {
     try {
-      const feedbackData = {
-        personalInfo: includePersonalInfo ? personalInfo : null,
-        feedback
-      };
+      // const feedbackData = {
+      //   personalInfo: includePersonalInfo ? personalInfo : null,
+      //   feedback
+      // };
       
-      await formsService.submitFeedback(feedbackData);
+      // await formsService.submitFeedback(feedbackData);
       router.push('/thank-you');
     } catch (error) {
       console.error('Error submitting feedback:', error);
