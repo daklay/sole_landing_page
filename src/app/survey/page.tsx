@@ -1,28 +1,32 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon, UserIcon, PauseIcon } from '@heroicons/react/24/outline';
+import { PauseIcon, UserIcon, StarIcon, PlusIcon, XMarkIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
-// import Footer from '../components/Footer';
 
-const categories = [
-  { id: 'academic', name: 'Academic Resources', description: 'Library, online materials, research tools' },
-  { id: 'teaching', name: 'Teaching Quality', description: 'Instruction quality, engagement, support' },
-  { id: 'facilities', name: 'Campus Facilities', description: 'Classrooms, labs, study spaces' },
-  { id: 'services', name: 'Student Services', description: 'Administrative support, counseling, career services' },
-  { id: 'activities', name: 'Extra-curricular', description: 'Clubs, events, sports activities' },
-];
+interface PersonalInfo {
+  fullName: string;
+  email: string;
+}
 
 interface FeedbackItem {
   rating: number;
   comment: string;
 }
 
-interface PersonalInfo {
-  fullName: string;
-  email: string;
+interface FormSettings {
+  status: boolean;
+  thankYouMessage: string;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  description: string;
+  ratingQuestion: string;
+  commentQuestion: string;
 }
 
 export default function SurveyPage() {
@@ -33,7 +37,49 @@ export default function SurveyPage() {
   const [showCategorySelect, setShowCategorySelect] = useState(false);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo>({ fullName: '', email: '' });
   const [includePersonalInfo, setIncludePersonalInfo] = useState(false);
-  const isPaused = false; // This should come from your API or props
+  const [formSettings, setFormSettings] = useState<FormSettings>({ status: true, thankYouMessage: '' });
+  const [categories, setCategories] = useState<Category[]>([]);
+  const isPaused = !formSettings.status;
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/public/forms/year');
+        const data = await response.json();
+        setFormSettings(data.formSettings);
+        // Transform the API categories to match our interface
+        const transformedCategories = data.YearCaterogies.map((cat: any) => ({
+          id: cat.uuid,
+          name: cat.name,
+          description: cat.description,
+          ratingQuestion: cat.ratingQuestion,
+          commentQuestion: cat.commentQuestion
+        }));
+        setCategories(transformedCategories);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setCategories([]);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setShowCategorySelect(false);
+      }
+    }
+
+    if (showCategorySelect) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showCategorySelect]);
 
   const handleCategorySelect = (categoryId: string) => {
     if (!selectedCategories.includes(categoryId)) {
@@ -65,22 +111,6 @@ export default function SurveyPage() {
 
   const isSubmitDisabled = selectedCategories.length === 0 || 
     selectedCategories.some(cat => feedback[cat]?.rating === 0);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-        setShowCategorySelect(false);
-      }
-    }
-
-    if (showCategorySelect) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showCategorySelect]);
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -225,7 +255,7 @@ export default function SurveyPage() {
                     {/* Rating */}
                     <div className="mb-6">
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        How would you rate your experience?
+                        {category.ratingQuestion}
                       </label>
                       <div className="flex gap-3">
                         {[1, 2, 3, 4, 5].map((value) => (
@@ -250,7 +280,7 @@ export default function SurveyPage() {
                     {/* Comment */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-3">
-                        Share your thoughts 
+                        {category.commentQuestion}
                       </label>
                       <textarea
                         rows={4}

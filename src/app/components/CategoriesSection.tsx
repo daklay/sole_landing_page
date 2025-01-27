@@ -1,44 +1,53 @@
 'use client';
 
-import {
-  SparklesIcon,
-  HomeIcon,
-  BookOpenIcon,
-  BuildingOfficeIcon,
-  UserIcon,
-  AcademicCapIcon,
-  MusicalNoteIcon,
-  ShieldCheckIcon,
-  EllipsisHorizontalCircleIcon,
-  XMarkIcon,
-  BeakerIcon,
-  WrenchIcon,
-  GlobeAltIcon,
-  HeartIcon,
-} from '@heroicons/react/24/outline';
+import * as Icon from '@heroicons/react/24/outline';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
-const visibleCategories = [
-  { name: 'Food Quality', icon: SparklesIcon },
-  { name: 'Housing', icon: HomeIcon },
-  { name: 'Education', icon: BookOpenIcon },
-  { name: 'Campus Facilities', icon: BuildingOfficeIcon },
-  { name: 'Student Services', icon: UserIcon },
-  { name: 'Academic Resources', icon: AcademicCapIcon },
-  { name: 'Extra-curricular', icon: MusicalNoteIcon },
-];
+interface Category {
+  uuid: string;
+  name: string;
+  icon: string;
+  description: string;
+  ratingQuestion: string;
+  commentQuestion: string;
+}
 
-const additionalCategories = [
-  { name: 'Lab Equipment', icon: BeakerIcon },
-  { name: 'Technical Support', icon: WrenchIcon },
-  { name: 'International Services', icon: GlobeAltIcon },
-  { name: 'Health Services', icon: HeartIcon },
-  { name: 'Security', icon: ShieldCheckIcon },
-];
+const getIconComponent = (iconName: string): any => {
+  // Convert hyphenated name to PascalCase and append 'Icon'
+  const iconKey = iconName
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('') + 'Icon';
+  
+  return (Icon as any)[iconKey] || Icon.AcademicCapIcon;
+};
 
 export default function CategoriesSection() {
   const [isOpen, setIsOpen] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [visibleCategories, setVisibleCategories] = useState<Category[]>([]);
+  const [additionalCategories, setAdditionalCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/public/forms/year');
+        const data = await response.json();
+        const allCategories = data.YearCaterogies;
+        
+        // Split categories into visible and additional
+        const visibleCount = Math.min(6, allCategories.length);
+        setVisibleCategories(allCategories.slice(0, visibleCount));
+        setAdditionalCategories(allCategories.slice(visibleCount));
+        setCategories(allCategories);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <>
@@ -51,7 +60,7 @@ export default function CategoriesSection() {
             </h2>
             <div className="mt-4 h-1 w-20 bg-primary rounded-full"></div>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {visibleCategories.map((category, index) => (
               <div 
                 key={index}
@@ -65,7 +74,6 @@ export default function CategoriesSection() {
                 </div>
               </div>
             ))}
-            {/* More Categories Tile */}
             <div 
               onClick={() => setIsOpen(true)}
               className="group bg-white/50 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-dashed border-primary/30"
@@ -77,6 +85,40 @@ export default function CategoriesSection() {
                 <h3 className="font-medium text-gray-900 mt-1.5">More Categories</h3>
               </div>
             </div>
+          </div> */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {visibleCategories.map((category) => {
+              const IconComponent = getIconComponent(category.icon);
+              return (
+                <div 
+                  key={category.uuid}
+                  className="group bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-lg">
+                      <IconComponent className="w-6 h-6 text-primary group-hover:scale-110 transition-transform duration-300" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-900">{category.name}</h3>
+                      <p className="text-sm text-gray-500 mt-1">{category.description}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {additionalCategories.length > 0 && (
+              <div 
+                onClick={() => setIsOpen(true)}
+                className="group bg-white/50 p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 border border-dashed border-primary/30"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-primary/5 rounded-lg">
+                    <Icon.EllipsisHorizontalCircleIcon className="w-6 h-6 text-primary/70 group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  <h3 className="font-medium text-gray-900 mt-1.5">More Categories</h3>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -107,31 +149,32 @@ export default function CategoriesSection() {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-2xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className="flex justify-between items-center mb-6">
-                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
-                      Additional Categories
-                    </Dialog.Title>
-                    <button
-                      onClick={() => setIsOpen(false)}
-                      className="rounded-full p-1.5 hover:bg-gray-100 transition-colors"
-                    >
-                      <XMarkIcon className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {additionalCategories.map((category, index) => (
-                      <div 
-                        key={index}
-                        className="group bg-white p-4 rounded-lg border hover:border-primary/30 transition-all duration-300 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="p-2.5 bg-primary/10 rounded-lg">
-                            <category.icon className="w-5 h-5 text-primary group-hover:scale-110 transition-transform duration-300" />
+                  <Dialog.Title
+                    as="h3"
+                    className="text-lg font-medium leading-6 text-gray-900 mb-4"
+                  >
+                    Additional Categories
+                  </Dialog.Title>
+                  <div className="grid gap-4">
+                    {additionalCategories.map((category) => {
+                      const IconComponent = getIconComponent(category.icon);
+                      return (
+                        <div 
+                          key={category.uuid}
+                          className="group bg-white p-4 rounded-lg border hover:border-primary/30 transition-all duration-300 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="p-2 bg-primary/10 rounded-lg">
+                              <IconComponent className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                              <h3 className="font-medium text-gray-900">{category.name}</h3>
+                              <p className="text-sm text-gray-500">{category.description}</p>
+                            </div>
                           </div>
-                          <h3 className="font-medium text-gray-900">{category.name}</h3>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
